@@ -15,7 +15,9 @@ It will be a system that saves the state of browser tabs in a database. Like scr
 
 ## Functional Requirements
 - Save web page state to database through a mobile browser extension (or initially a userscript)
-- 
+- When the page stops scrolling, save (needs to be general for all sites):
+  - Visible text in the viewport
+  - Scrollposition
 ## NFRs
 - KISS
 ### Logging
