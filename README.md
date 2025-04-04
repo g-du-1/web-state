@@ -60,7 +60,7 @@ function getVisibleTextInViewport() {
 console.log(getVisibleTextInViewport());
 ```
 
-## User Stories
+## User Stories (MVP)
 
 ```
 GIVEN I open any page, load more multiple pages if present
