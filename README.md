@@ -23,8 +23,7 @@ AND These should be saved as separate events and should work for all sites in a 
 
 GIVEN There is page state saved
 WHEN I load the url
-THEN Indicate the scroll position on the page
-AND I should have a simple way to view the saved text
+THEN I should have a simple way to view the saved text as well as the saved and current scroll position
 ```
 
 ## NFRs
