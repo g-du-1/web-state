@@ -32,29 +32,26 @@ It will be a system that saves the state of browser tabs in a database. Like scr
 ```js
 function getVisibleTextInViewport() {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-
-  let node, visibleText = '';
+  let text = '', node;
 
   while (node = walker.nextNode()) {
-    const text = node.nodeValue.trim();
+    const value = node.nodeValue.trim();
 
-    if (!text) continue;
+    if (!value) continue;
 
     const range = document.createRange();
     range.selectNodeContents(node);
+    const rects = range.getClientRects();
 
-    for (const rect of range.getClientRects()) {
-      const { top, bottom, left, right } = rect;
-      const { innerWidth: w, innerHeight: h } = window;
-
-      if (top >= 0 && bottom <= h && left >= 0 && right <= w) {
-        visibleText += text + ' ';
+    for (const { top, bottom, left, right } of rects) {
+      if (top >= 0 && bottom <= innerHeight && left >= 0 && right <= innerWidth) {
+        text += value + ' ';
         break;
       }
     }
   }
 
-  return visibleText.trim();
+  return text.trim();
 }
 
 console.log(getVisibleTextInViewport());
