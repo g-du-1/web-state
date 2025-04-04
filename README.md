@@ -31,37 +31,31 @@ It will be a system that saves the state of browser tabs in a database. Like scr
 
 ```js
 function getVisibleTextInViewport() {
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-    acceptNode: function(node) {
-      // Ignore whitespace-only text nodes
-      if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-      const range = document.createRange();
-      range.selectNodeContents(node);
-      const rects = range.getClientRects();
-
-      for (const rect of rects) {
-        if (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        ) {
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      }
-
-      return NodeFilter.FILTER_REJECT;
-    }
-  });
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
 
   let node, visibleText = '';
+
   while (node = walker.nextNode()) {
-    visibleText += node.nodeValue.trim() + ' ';
+    const text = node.nodeValue.trim();
+
+    if (!text) continue;
+
+    const range = document.createRange();
+    range.selectNodeContents(node);
+
+    for (const rect of range.getClientRects()) {
+      const { top, bottom, left, right } = rect;
+      const { innerWidth: w, innerHeight: h } = window;
+
+      if (top >= 0 && bottom <= h && left >= 0 && right <= w) {
+        visibleText += text + ' ';
+        break;
+      }
+    }
   }
 
   return visibleText.trim();
 }
 
-// Usage
 console.log(getVisibleTextInViewport());
 ```
