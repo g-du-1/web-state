@@ -66,4 +66,9 @@ console.log(getVisibleTextInViewport());
 GIVEN I open any page, load more multiple pages if present
 WHEN I stop scrolling
 THEN I want to save the text I currently see in the viewport as well as my scroll position so that I can go back to it in case I lose my position
+
+GIVEN There is page state saved
+WHEN I load the url
+THEN Indicate the scroll position on the page
+AND I should have a simple way to view the saved text
 ```
