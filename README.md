@@ -59,3 +59,9 @@ function getVisibleTextInViewport() {
 
 console.log(getVisibleTextInViewport());
 ```
+
+## User Story
+
+GIVEN I open a reddit page, scroll down multiple pages
+WHEN I stop scrolling
+THEN I want to save what I currently see on the page so that I can go back to it in case I lose my position
