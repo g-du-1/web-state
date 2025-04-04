@@ -15,5 +15,10 @@ It will be a system that saves the state of browser tabs in a database. Like scr
 
 ## Functional Requirements
 ## NFRs
+### Logging
 ## Technologies
+- Spring Boot
+- Postgres
+- Docker
+- Chrome Extension - Vanilla JS - as simple as possible
 ## Diagrams
