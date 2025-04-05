@@ -40,6 +40,8 @@ THEN I should have a simple way to view the saved text as well as the saved and 
 
 ## Example Code
 
+On page load get latest from db and save on window.
+
 ```js
 function getVisibleTextInViewport() {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
