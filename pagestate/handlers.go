@@ -7,22 +7,25 @@ import (
 )
 
 type CreatePagestateRequest struct {
-	Url       string `json:"url"`
-	ScrollPos int    `json:"scrollPos"`
+	Url         string `json:"url"`
+	ScrollPos   int    `json:"scrollPos"`
+	VisibleText string `json:"visibleText"`
 }
 
 type CreatePagestateResponse struct {
-	Id        int       `json:"id"`
-	Url       string    `json:"url"`
-	ScrollPos int       `json:"scrollPos"`
-	CreatedAt time.Time `json:"createdAt"`
+	Id          int       `json:"id"`
+	Url         string    `json:"url"`
+	ScrollPos   int       `json:"scrollPos"`
+	VisibleText string    `json:"visibleText"`
+	CreatedAt   time.Time `json:"createdAt"`
 }
 
 type GetPagestateResponse struct {
-	Id        int       `json:"id"`
-	Url       string    `json:"url"`
-	ScrollPos int       `json:"scrollPos"`
-	CreatedAt time.Time `json:"createdAt"`
+	Id          int       `json:"id"`
+	Url         string    `json:"url"`
+	ScrollPos   int       `json:"scrollPos"`
+	VisibleText string    `json:"visibleText"`
+	CreatedAt   time.Time `json:"createdAt"`
 }
 
 type GetAllPagestatesResponse struct {
@@ -45,8 +48,9 @@ func (h *Handler) CreatePagestate(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&req)
 
 	pagestate := Pagestate{
-		Url:       req.Url,
-		ScrollPos: req.ScrollPos,
+		Url:         req.Url,
+		ScrollPos:   req.ScrollPos,
+		VisibleText: req.VisibleText,
 	}
 
 	createdPagestate, _ := h.repo.CreatePagestate(r.Context(), pagestate)

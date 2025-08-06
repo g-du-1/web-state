@@ -61,8 +61,9 @@ func (suite *PagestateAPITestSuite) TestCreatePagestateAPI() {
 	defer ts.Close()
 
 	requestBody := map[string]interface{}{
-		"url":       "https://example.com",
-		"scrollPos": 33,
+		"url":         "https://example.com",
+		"scrollPos":   33,
+		"visibleText": "Sample visible text content",
 	}
 
 	jsonData, err := json.Marshal(requestBody)
@@ -81,6 +82,7 @@ func (suite *PagestateAPITestSuite) TestCreatePagestateAPI() {
 	assert.NotZero(t, response.Id)
 	assert.Equal(t, "https://example.com", response.Url)
 	assert.Equal(t, 33, response.ScrollPos)
+	assert.Equal(t, "Sample visible text content", response.VisibleText)
 }
 
 func (suite *PagestateAPITestSuite) TestGetPagestateAPI() {
@@ -89,7 +91,7 @@ func (suite *PagestateAPITestSuite) TestGetPagestateAPI() {
 	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
 	defer ts.Close()
 
-	createJsonData1, err := json.Marshal(map[string]any{"url": "https://test1.com", "scrollPos": 150})
+	createJsonData1, err := json.Marshal(map[string]any{"url": "https://test1.com", "scrollPos": 150, "visibleText": "First page content"})
 	assert.NoError(t, err)
 
 	createResp1, err := http.Post(ts.URL+"/pagestate", "application/json", bytes.NewBuffer(createJsonData1))
@@ -102,7 +104,7 @@ func (suite *PagestateAPITestSuite) TestGetPagestateAPI() {
 	err = json.NewDecoder(createResp1.Body).Decode(&createResponse1)
 	assert.NoError(t, err)
 
-	createJsonData2, err := json.Marshal(map[string]any{"url": "https://test2.com", "scrollPos": 300})
+	createJsonData2, err := json.Marshal(map[string]any{"url": "https://test2.com", "scrollPos": 300, "visibleText": "Second page content"})
 	assert.NoError(t, err)
 
 	createResp2, err := http.Post(ts.URL+"/pagestate", "application/json", bytes.NewBuffer(createJsonData2))
@@ -132,11 +134,13 @@ func (suite *PagestateAPITestSuite) TestGetPagestateAPI() {
 		if retrieved.Id == createResponse1.Id {
 			assert.Equal(t, createResponse1.Url, retrieved.Url)
 			assert.Equal(t, createResponse1.ScrollPos, retrieved.ScrollPos)
+			assert.Equal(t, createResponse1.VisibleText, retrieved.VisibleText)
 			found1 = true
 		}
 		if retrieved.Id == createResponse2.Id {
 			assert.Equal(t, createResponse2.Url, retrieved.Url)
 			assert.Equal(t, createResponse2.ScrollPos, retrieved.ScrollPos)
+			assert.Equal(t, createResponse2.VisibleText, retrieved.VisibleText)
 			found2 = true
 		}
 	}
