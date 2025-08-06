@@ -3,6 +3,7 @@ package pagestate
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 type CreatePagestateRequest struct {
@@ -11,15 +12,17 @@ type CreatePagestateRequest struct {
 }
 
 type CreatePagestateResponse struct {
-	Id        int    `json:"id"`
-	Url       string `json:"url"`
-	ScrollPos int    `json:"scrollPos"`
+	Id        int       `json:"id"`
+	Url       string    `json:"url"`
+	ScrollPos int       `json:"scrollPos"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type GetPagestateResponse struct {
-	Id        int    `json:"id"`
-	Url       string `json:"url"`
-	ScrollPos int    `json:"scrollPos"`
+	Id        int       `json:"id"`
+	Url       string    `json:"url"`
+	ScrollPos int       `json:"scrollPos"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type GetAllPagestatesResponse struct {

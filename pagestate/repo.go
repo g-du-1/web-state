@@ -20,14 +20,14 @@ func NewRepository(ctx context.Context, connStr string) (*Repository, error) {
 
 func (r Repository) CreatePagestate(ctx context.Context, pagestate Pagestate) (Pagestate, error) {
 	err := r.conn.QueryRow(ctx,
-		"INSERT INTO pagestates (url, scroll_pos) VALUES ($1, $2) RETURNING id",
-		pagestate.Url, pagestate.ScrollPos).Scan(&pagestate.Id)
+		"INSERT INTO pagestates (url, scroll_pos) VALUES ($1, $2) RETURNING id, created_at",
+		pagestate.Url, pagestate.ScrollPos).Scan(&pagestate.Id, &pagestate.CreatedAt)
 
 	return pagestate, err
 }
 
 func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
-	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos FROM pagestates ORDER BY id")
+	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos, created_at FROM pagestates ORDER BY created_at DESC")
 
 	defer rows.Close()
 
@@ -36,7 +36,7 @@ func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
 	for rows.Next() {
 		var pagestate Pagestate
 
-		rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos)
+		rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.CreatedAt)
 
 		pagestates = append(pagestates, pagestate)
 	}
