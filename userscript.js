@@ -26,14 +26,38 @@
   const getElementsAtViewportCenter = () => {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    return document.elementsFromPoint(centerX, centerY);
+    const radius = 100;
+
+    const points = [
+      [centerX, centerY],
+      [centerX - radius, centerY],
+      [centerX + radius, centerY],
+      [centerX, centerY - radius],
+      [centerX, centerY + radius],
+      [centerX - radius, centerY - radius],
+      [centerX + radius, centerY - radius],
+      [centerX - radius, centerY + radius],
+      [centerX + radius, centerY + radius],
+    ];
+
+    const allElements = new Set();
+
+    points.forEach(([x, y]) => {
+      const elements = document.elementsFromPoint(x, y);
+      elements.forEach((el) => allElements.add(el));
+    });
+
+    return Array.from(allElements);
   };
 
   const getVisibleTextAtCenter = () => {
     const elements = getElementsAtViewportCenter();
 
     const visibleText = elements
-      .filter((el) => isFullyInViewport(el) && el.textContent?.trim())
+      .filter(
+        (el) =>
+          isFullyInViewport(el) && el.tagName === "P" && el.textContent?.trim()
+      )
       .map((el) => el.textContent.trim())
       .join(" ")
       .replace(/\s+/g, " ")
@@ -66,6 +90,6 @@
 
   document.addEventListener("scrollend", async () => {
     console.log("Visible: ", getVisibleTextAtCenter());
-    savePageState;
+    savePageState();
   });
 })();
