@@ -38,11 +38,7 @@ func (h *Handler) CreatePagestate(w http.ResponseWriter, r *http.Request) {
 
 	createdPagestate, _ := h.repo.CreatePagestate(r.Context(), pagestate)
 
-	response := CreatePagestateResponse{
-		Id:        createdPagestate.Id,
-		Url:       createdPagestate.Url,
-		ScrollPos: createdPagestate.ScrollPos,
-	}
+	response := CreatePagestateResponse(createdPagestate)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
