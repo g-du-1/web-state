@@ -1,7 +1,5 @@
-CREATE TABLE IF NOT EXISTS customers (
+CREATE TABLE IF NOT EXISTS pagestates (
     id serial,
-    name varchar(255),
-    email varchar(255)
+    url varchar(500),
+    scroll_pos integer
 );
-
-INSERT INTO customers (name, email) VALUES ('John', 'john@gmail.com');
