@@ -2,8 +2,6 @@ package pagestate
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -13,12 +11,7 @@ type Repository struct {
 }
 
 func NewRepository(ctx context.Context, connStr string) (*Repository, error) {
-	conn, err := pgx.Connect(ctx, connStr)
-
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		return nil, err
-	}
+	conn, _ := pgx.Connect(ctx, connStr)
 
 	return &Repository{
 		conn: conn,

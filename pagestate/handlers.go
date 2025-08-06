@@ -29,22 +29,14 @@ func NewHandler(repo *Repository) *Handler {
 func (h *Handler) CreatePagestate(w http.ResponseWriter, r *http.Request) {
 	var req CreatePagestateRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
+	_ = json.NewDecoder(r.Body).Decode(&req)
 
 	pagestate := Pagestate{
 		Url:       req.Url,
 		ScrollPos: req.ScrollPos,
 	}
 
-	createdPagestate, err := h.repo.CreatePagestate(r.Context(), pagestate)
-
-	if err != nil {
-		http.Error(w, "Failed to create pagestate", http.StatusInternalServerError)
-		return
-	}
+	createdPagestate, _ := h.repo.CreatePagestate(r.Context(), pagestate)
 
 	response := CreatePagestateResponse{
 		Id:        createdPagestate.Id,
