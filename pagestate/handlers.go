@@ -56,12 +56,7 @@ func (h *Handler) CreatePagestate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetPagestate(w http.ResponseWriter, r *http.Request) {
-	pagestates, err := h.repo.GetAllPagestates(r.Context())
-
-	if err != nil {
-		http.Error(w, "failed to retrieve page states", http.StatusInternalServerError)
-		return
-	}
+	pagestates, _ := h.repo.GetAllPagestates(r.Context())
 
 	response := GetAllPagestatesResponse{
 		Pagestates: make([]GetPagestateResponse, len(pagestates)),
