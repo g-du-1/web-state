@@ -70,6 +70,7 @@
     const payload = {
       url: window.location.href,
       scrollPos: Math.trunc(window.scrollY),
+      visibleText: getVisibleTextAtCenter(),
     };
 
     GM_xmlhttpRequest({
@@ -88,8 +89,5 @@
     });
   };
 
-  document.addEventListener("scrollend", async () => {
-    console.log("Visible: ", getVisibleTextAtCenter());
-    savePageState();
-  });
+  document.addEventListener("scrollend", savePageState);
 })();
