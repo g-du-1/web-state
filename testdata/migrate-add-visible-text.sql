@@ -1,0 +1,1 @@
+ALTER TABLE pagestates ADD COLUMN IF NOT EXISTS visible_text text;
