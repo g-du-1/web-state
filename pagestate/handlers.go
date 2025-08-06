@@ -27,11 +27,6 @@ func NewHandler(repo *Repository) *Handler {
 }
 
 func (h *Handler) CreatePagestate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	var req CreatePagestateRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
