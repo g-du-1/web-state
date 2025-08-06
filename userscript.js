@@ -12,40 +12,34 @@
 (function () {
   "use strict";
 
-  const isElementInViewport = (element) => {
+  const isFullyInViewport = (element) => {
     const rect = element.getBoundingClientRect();
 
     return (
       rect.top >= 0 &&
       rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      rect.bottom <= window.innerHeight &&
+      rect.right <= window.innerWidth
     );
   };
 
-  const getElementsInMiddle = () => {
-    const viewportMidpointY = window.innerHeight / 2;
-
-    const elementsAtMidpoint = document.elementsFromPoint(
-      window.innerWidth / 2,
-      viewportMidpointY
-    );
-
-    return elementsAtMidpoint;
+  const getElementsAtViewportCenter = () => {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    return document.elementsFromPoint(centerX, centerY);
   };
 
-  const captureVisibleText = () => {
-    const elementsInMiddle = getElementsInMiddle();
+  const getVisibleTextAtCenter = () => {
+    const elements = getElementsAtViewportCenter();
 
-    const visibleText = Array.from(elementsInMiddle).reduce((text, element) => {
-      if (isElementInViewport(element)) {
-        text += element.textContent.trim() + " ";
-      }
-      return text;
-    }, "");
+    const visibleText = elements
+      .filter((el) => isFullyInViewport(el) && el.textContent?.trim())
+      .map((el) => el.textContent.trim())
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-    return visibleText.replace(/\s+/g, " ");
+    return visibleText;
   };
 
   const savePageState = async () => {
@@ -71,7 +65,7 @@
   };
 
   document.addEventListener("scrollend", async () => {
-    console.log("Visible: ", captureVisibleText());
+    console.log("Visible: ", getVisibleTextAtCenter());
     savePageState;
   });
 })();
