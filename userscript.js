@@ -96,7 +96,7 @@
       ) {
         const text = node.textContent.trim();
 
-        if (text) {
+        if (text && text.length > 25) {
           visibleText.push(text + "\n\n");
         }
       }
