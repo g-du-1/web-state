@@ -24,6 +24,10 @@ go test -coverprofile=coverage.out ./...
 go tool cover --html=coverage
 ```
 
+## Debugging
+
+Use the VSCode launch config.
+
 ## Userscript
 
 Use Tampermonkey.
