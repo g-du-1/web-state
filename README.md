@@ -31,3 +31,15 @@ Use the VSCode launch config.
 ## Userscript
 
 Use Tampermonkey.
+
+## DB
+
+Connect e.g. via Docker Desktop.
+
+```bash
+psql -h localhost -p 5432 -U postgres -d page-state-saver
+
+\c page-state-saver
+
+TRUNCATE pagestates;
+```
