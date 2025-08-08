@@ -2,7 +2,7 @@
 // @name         Scroll State Saver
 // @namespace    http://tampermonkey.net/
 // @version      2025-08-06
-// @description  try to take over the world!
+// @description  Saves page state.
 // @author       You
 // @match        https://www.reddit.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=reddit.com
@@ -12,82 +12,46 @@
 (function () {
   "use strict";
 
-  const isFullyInViewport = (element) => {
-    const rect = element.getBoundingClientRect();
+  const baseUrl = "http://localhost:8080";
+  const saveUrl = `${baseUrl}/pagestate`;
+  const getLatestUrl = `${baseUrl}/pagestate/latest`;
 
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= window.innerHeight &&
-      rect.right <= window.innerWidth
-    );
-  };
-
-  const getElementsAtViewportCenter = () => {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const radius = 100;
-
-    const points = [
-      [centerX, centerY],
-      [centerX - radius, centerY],
-      [centerX + radius, centerY],
-      [centerX, centerY - radius],
-      [centerX, centerY + radius],
-      [centerX - radius, centerY - radius],
-      [centerX + radius, centerY - radius],
-      [centerX - radius, centerY + radius],
-      [centerX + radius, centerY + radius],
-    ];
-
-    const allElements = new Set();
-
-    points.forEach(([x, y]) => {
-      const elements = document.elementsFromPoint(x, y);
-      elements.forEach((el) => allElements.add(el));
-    });
-
-    return Array.from(allElements);
-  };
-
-  const getVisibleTextAtCenter = () => {
-    const elements = getElementsAtViewportCenter();
-
-    const visibleText = elements
-      .filter(
-        (el) =>
-          isFullyInViewport(el) && el.tagName === "P" && el.textContent?.trim()
-      )
-      .map((el) => el.textContent.trim())
-      .join(" ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    return visibleText;
-  };
-
-  const savePageState = async () => {
+  const savePageState = () => {
     const payload = {
       url: window.location.href,
       scrollPos: Math.trunc(window.scrollY),
-      visibleText: getVisibleTextAtCenter(),
+      visibleText: "TODO: Not implemented in js",
     };
 
     GM_xmlhttpRequest({
       method: "POST",
-      url: "http://localhost:8080/pagestate",
+      url: saveUrl,
       data: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
       },
-      onload: function (response) {
-        console.log("Success:", response.responseText);
+      onload: (response) => {
+        console.log("Saved Page State:", JSON.parse(response.responseText));
       },
-      onerror: function (error) {
-        console.error("Error:", error);
+      onerror: (error) => {
+        console.error("Page State Save:", error);
       },
     });
   };
 
-  document.addEventListener("scrollend", savePageState);
+  const getLatestPageState = () => {
+    GM_xmlhttpRequest({
+      method: "GET",
+      url: getLatestUrl + "?url=" + encodeURIComponent(window.location.href),
+      onload: (response) => {
+        console.log("Latest Page State:", JSON.parse(response.responseText));
+      },
+      onerror: (error) => {
+        console.error("Latest Page State:", error);
+      },
+    });
+  };
+
+  window.addEventListener("load", getLatestPageState);
+  window.addEventListener("scrollend", savePageState);
 })();
