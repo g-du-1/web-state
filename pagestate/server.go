@@ -17,6 +17,7 @@ func NewServer(port string, repo *Repository) *Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/pagestate", handler.CreatePagestate)
 	mux.HandleFunc("/pagestate/get", handler.GetPagestate)
+	mux.HandleFunc("/pagestate/latest", handler.GetLatestPagestateForUrl)
 
 	server := &http.Server{
 		Addr:    ":" + port,

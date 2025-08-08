@@ -43,3 +43,16 @@ func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
 
 	return pagestates, rows.Err()
 }
+
+func (r Repository) GetLatestPagestateForUrl(ctx context.Context, url string) (Pagestate, error) {
+	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates WHERE url = $1 ORDER BY created_at DESC LIMIT 1", url)
+
+	defer rows.Close()
+
+	var pagestate Pagestate
+
+	rows.Next()
+	rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+
+	return pagestate, rows.Err()
+}

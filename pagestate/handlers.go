@@ -77,3 +77,14 @@ func (h *Handler) GetPagestate(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 }
+
+func (h *Handler) GetLatestPagestateForUrl(w http.ResponseWriter, r *http.Request) {
+	url := r.URL.Query().Get("url")
+	pagestate, _ := h.repo.GetLatestPagestateForUrl(r.Context(), url)
+
+	response := GetPagestateResponse(pagestate)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
