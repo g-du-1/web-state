@@ -12,7 +12,7 @@
 (function () {
   "use strict";
 
-  const baseUrl = "http://localhost:8080";
+  const baseUrl = "http://192.168.0.11:8080";
   const saveUrl = `${baseUrl}/pagestate`;
   const getLatestUrl = `${baseUrl}/pagestate/latest`;
 
