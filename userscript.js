@@ -17,44 +17,51 @@
   const getLatestUrl = `${baseUrl}/pagestate/latest`;
 
   let latestState = null;
+  let stateButton = null;
 
   const createButton = () => {
     const button = document.createElement("button");
-
-    button.textContent = "Show State";
 
     button.style.cssText = `
       position: fixed;
       bottom: 20px;
       right: 20px;
       z-index: 10000;
-      padding: 10px;
-      background: #0079d3;
+      background: rgba(0, 0, 0, 0.5);
       color: white;
-      border: none;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
+      font-size: 11px;
+      min-width: 100px;
     `;
 
     button.onclick = () => {
       if (latestState) {
-        showStateInfo(latestState);
+        alert(latestState.visibleText);
       } else {
         alert("No saved state found");
       }
     };
 
     document.body.appendChild(button);
+    stateButton = button;
+    updateButtonText();
   };
 
-  const showStateInfo = (state) => {
+  const updateButtonText = () => {
+    if (!stateButton) return;
+
     const currentScroll = Math.trunc(window.scrollY);
 
-    alert(
-      `Saved State:\nScroll: ${state.scrollPos}px\nText: ${
-        state.visibleText || "N/A"
-      }\nCurrent Scroll: ${currentScroll}px`
+    const maxScroll = Math.trunc(
+      document.documentElement.scrollHeight - window.innerHeight
     );
+
+    if (latestState) {
+      stateButton.textContent = `${currentScroll} / ${latestState.scrollPos}`;
+    } else {
+      stateButton.textContent = `${currentScroll} / ${maxScroll}`;
+    }
   };
 
   const savePageState = () => {
@@ -87,6 +94,7 @@
       onload: (response) => {
         latestState = JSON.parse(response.responseText);
         console.log("Latest Page State:", latestState);
+        updateButtonText();
       },
       onerror: (error) => {
         console.error("Latest Page State:", error);
@@ -99,5 +107,6 @@
     getLatestPageState();
   });
 
+  window.addEventListener("scroll", updateButtonText);
   window.addEventListener("scrollend", savePageState);
 })();
