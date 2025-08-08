@@ -16,6 +16,47 @@
   const saveUrl = `${baseUrl}/pagestate`;
   const getLatestUrl = `${baseUrl}/pagestate/latest`;
 
+  let latestState = null;
+
+  const createButton = () => {
+    const button = document.createElement("button");
+
+    button.textContent = "Show State";
+
+    button.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10000;
+      padding: 10px;
+      background: #0079d3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    `;
+
+    button.onclick = () => {
+      if (latestState) {
+        showStateInfo(latestState);
+      } else {
+        alert("No saved state found");
+      }
+    };
+
+    document.body.appendChild(button);
+  };
+
+  const showStateInfo = (state) => {
+    const currentScroll = Math.trunc(window.scrollY);
+
+    alert(
+      `Saved State:\nScroll: ${state.scrollPos}px\nText: ${
+        state.visibleText || "N/A"
+      }\nCurrent Scroll: ${currentScroll}px`
+    );
+  };
+
   const savePageState = () => {
     const payload = {
       url: window.location.href,
@@ -44,7 +85,8 @@
       method: "GET",
       url: getLatestUrl + "?url=" + encodeURIComponent(window.location.href),
       onload: (response) => {
-        console.log("Latest Page State:", JSON.parse(response.responseText));
+        latestState = JSON.parse(response.responseText);
+        console.log("Latest Page State:", latestState);
       },
       onerror: (error) => {
         console.error("Latest Page State:", error);
@@ -52,6 +94,10 @@
     });
   };
 
-  window.addEventListener("load", getLatestPageState);
+  window.addEventListener("load", () => {
+    createButton();
+    getLatestPageState();
+  });
+
   window.addEventListener("scrollend", savePageState);
 })();
