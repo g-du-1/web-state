@@ -53,3 +53,9 @@ func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
 
 	return pagestates, rows.Err()
 }
+
+func (r Repository) DeleteAllPageStates(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, "DELETE FROM pagestates")
+
+	return err
+}

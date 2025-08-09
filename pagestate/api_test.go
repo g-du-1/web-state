@@ -178,6 +178,58 @@ func (suite *PagestateAPITestSuite) TestGetsAllPageStatesInOrder() {
 	assert.Equal(t, "some text", response.Pagestates[1].VisibleText)
 }
 
+func (suite *PagestateAPITestSuite) TestDeletesAllPageStates() {
+	t := suite.T()
+
+	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
+	defer ts.Close()
+
+	url1 := "https://example.com/page1"
+	url2 := "https://example.com/page2"
+
+	body1, err := json.Marshal(map[string]any{
+		"url":         url1,
+		"scrollPos":   1,
+		"visibleText": "a",
+	})
+
+	assert.NoError(t, err)
+
+	body2, err := json.Marshal(map[string]any{
+		"url":         url2,
+		"scrollPos":   2,
+		"visibleText": "b",
+	})
+
+	assert.NoError(t, err)
+
+	resp1, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(body1))
+	assert.NoError(t, err)
+	defer resp1.Body.Close()
+	assert.Equal(t, http.StatusCreated, resp1.StatusCode)
+
+	resp2, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(body2))
+	assert.NoError(t, err)
+	defer resp2.Body.Close()
+	assert.Equal(t, http.StatusCreated, resp2.StatusCode)
+
+	req, err := http.NewRequest(http.MethodDelete, ts.URL+"/api/v1/pagestate/delete", nil)
+	assert.NoError(t, err)
+	deleteResp, err := http.DefaultClient.Do(req)
+	assert.NoError(t, err)
+	defer deleteResp.Body.Close()
+
+	getResp, err := http.Get(ts.URL + "/api/v1/pagestate/all")
+	assert.NoError(t, err)
+	defer getResp.Body.Close()
+	assert.Equal(t, http.StatusOK, getResp.StatusCode)
+
+	var response GetAllPagestatesResponse
+	err = json.NewDecoder(getResp.Body).Decode(&response)
+	assert.NoError(t, err)
+	assert.Empty(t, response.Pagestates)
+}
+
 func TestPagestateAPITestSuite(t *testing.T) {
 	suite.Run(t, new(PagestateAPITestSuite))
 }

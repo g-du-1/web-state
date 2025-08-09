@@ -81,3 +81,9 @@ func (h *Handler) GetAllPageStates(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 }
+
+func (h *Handler) DeleteAllPageStates(w http.ResponseWriter, r *http.Request) {
+	h.repo.DeleteAllPageStates(r.Context())
+
+	w.WriteHeader(http.StatusOK)
+}
