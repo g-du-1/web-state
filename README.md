@@ -9,7 +9,7 @@ docker-compose down
 ```
 
 ```bash
-export DATABASE_URL="postgres://postgres:postgres@localhost:5432/page-state-saver?sslmode=disable"
+export DATABASE_URL="postgres://postgres:postgres@localhost:5432/page_state_saver?sslmode=disable"
 
 go run main.go
 ```
@@ -37,9 +37,9 @@ Use Tampermonkey.
 Connect e.g. via Docker Desktop.
 
 ```bash
-psql -h localhost -p 5432 -U postgres -d page-state-saver
+psql -h localhost -p 5432 -U postgres -d page_state_saver
 
-\c page-state-saver
+\c page_state_saver
 
 TRUNCATE pagestates;
 ```
