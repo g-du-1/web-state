@@ -27,3 +27,11 @@ func (r Repository) SavePagestate(ctx context.Context, pagestate Pagestate) (Pag
 
 	return pagestate, err
 }
+
+func (r Repository) GetPagestate(ctx context.Context, url string) (Pagestate, error) {
+	var pagestate Pagestate
+
+	err := r.conn.QueryRow(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates WHERE url = $1", url).Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+
+	return pagestate, err
+}

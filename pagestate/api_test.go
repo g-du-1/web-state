@@ -85,6 +85,45 @@ func (suite *PagestateAPITestSuite) TestSavePagestateAPI() {
 	assert.Equal(t, "Sample visible text content", response.VisibleText)
 }
 
+func (suite *PagestateAPITestSuite) TestGetsExistingPageStateForUrl() {
+	t := suite.T()
+
+	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
+	defer ts.Close()
+
+	requestBody := map[string]any{
+		"url":         "https://second-example.com",
+		"scrollPos":   363,
+		"visibleText": "text",
+	}
+
+	jsonData, err := json.Marshal(requestBody)
+	assert.NoError(t, err)
+
+	resp, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(jsonData))
+	assert.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	url := "https://second-example.com"
+
+	getResp, err := http.Get(ts.URL + "/api/v1/pagestate?url=" + url)
+	assert.NoError(t, err)
+	defer getResp.Body.Close()
+
+	assert.Equal(t, http.StatusOK, getResp.StatusCode)
+
+	var getResponse PagestateResponse
+	err = json.NewDecoder(getResp.Body).Decode(&getResponse)
+	assert.NoError(t, err)
+
+	assert.NotZero(t, getResponse.Id)
+	assert.Equal(t, url, getResponse.Url)
+	assert.Equal(t, 363, getResponse.ScrollPos)
+	assert.Equal(t, "text", getResponse.VisibleText)
+}
+
 func TestPagestateAPITestSuite(t *testing.T) {
 	suite.Run(t, new(PagestateAPITestSuite))
 }
