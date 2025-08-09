@@ -75,7 +75,7 @@ func (suite *PagestateAPITestSuite) TestSavePagestateAPI() {
 
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-	var response CreatePagestateResponse
+	var response PagestateResponse
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	assert.NoError(t, err)
 
