@@ -44,7 +44,7 @@
     button1.textContent = "0";
 
     container.onclick = () => {
-      if (latestState.url) {
+      if (latestState && latestState.url) {
         alert(
           latestState.url +
             "\n\n" +
@@ -84,11 +84,15 @@
   };
 
   const getLatestPageState = () => {
+    console.log("loading latest page state");
+
     GM_xmlhttpRequest({
       method: "GET",
       url: getLatestUrl + encodeURIComponent(window.location.href),
       onload: (response) => {
-        latestState = JSON.parse(response.responseText);
+        if (response.responseText) {
+          latestState = JSON.parse(response.responseText);
+        }
 
         window.dispatchEvent(
           new CustomEvent("pagestateloaded", {
@@ -104,18 +108,21 @@
   };
 
   window.addEventListener("load", () => {
+    console.log("load");
     createButtons();
+
+    setInterval(() => {
+      if (location.href !== lastUrl) {
+        lastUrl = location.href;
+        console.log("url changed");
+        getLatestPageState();
+      }
+    }, 500);
+
     getLatestPageState();
   });
 
   let lastUrl = location.href;
-
-  setInterval(() => {
-    if (location.href !== lastUrl) {
-      lastUrl = location.href;
-      getLatestPageState();
-    }
-  }, 500);
 
   const getVisibleText = () => {
     const viewport = {
@@ -166,9 +173,14 @@
     }
   };
 
-  window.addEventListener("scroll", updateButtonText);
+  window.addEventListener("scroll", () => {
+    console.log("scroll");
+    updateButtonText();
+  });
 
   const savePageState = () => {
+    console.log("saving page state");
+
     const payload = {
       url: window.location.href,
       scrollPos: Math.trunc(window.scrollY),
@@ -190,6 +202,7 @@
   let saveTimeout;
 
   window.addEventListener("scrollend", () => {
+    console.log("scrollend");
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(savePageState, 2500);
   });
