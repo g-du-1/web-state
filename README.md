@@ -4,14 +4,6 @@
 
 ```bash
 docker-compose up -d
-
-docker-compose down
-```
-
-```bash
-export DATABASE_URL="postgres://postgres:postgres@localhost:5432/page_state_saver?sslmode=disable"
-
-go run main.go
 ```
 
 ## Testing
