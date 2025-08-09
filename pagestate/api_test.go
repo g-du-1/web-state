@@ -69,7 +69,7 @@ func (suite *PagestateAPITestSuite) TestSavePagestateAPI() {
 	jsonData, err := json.Marshal(requestBody)
 	assert.NoError(t, err)
 
-	resp, err := http.Post(ts.URL+"/pagestate", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post(ts.URL+"/pagestate/save", "application/json", bytes.NewBuffer(jsonData))
 	assert.NoError(t, err)
 	defer resp.Body.Close()
 
