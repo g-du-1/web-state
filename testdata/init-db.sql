@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS pagestates (
     url varchar(500) NOT NULL,
     scroll_pos integer,
     visible_text text,
-    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (url)
 );

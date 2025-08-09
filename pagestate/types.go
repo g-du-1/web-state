@@ -7,5 +7,5 @@ type Pagestate struct {
 	Url         string
 	ScrollPos   int
 	VisibleText string
-	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }

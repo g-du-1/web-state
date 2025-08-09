@@ -17,7 +17,7 @@ type PagestateResponse struct {
 	Url         string    `json:"url"`
 	ScrollPos   int       `json:"scrollPos"`
 	VisibleText string    `json:"visibleText"`
-	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type Handler struct {

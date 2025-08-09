@@ -26,9 +26,9 @@ func (r Repository) SavePagestate(ctx context.Context, pagestate Pagestate) (Pag
 	err := r.conn.QueryRow(ctx,
 		`INSERT INTO pagestates (url, scroll_pos, visible_text)
 		 VALUES ($1, $2, $3)
-		 ON CONFLICT (url) DO UPDATE SET scroll_pos = EXCLUDED.scroll_pos, visible_text = EXCLUDED.visible_text
-		 RETURNING id, created_at`,
-		pagestate.Url, pagestate.ScrollPos, pagestate.VisibleText).Scan(&pagestate.Id, &pagestate.CreatedAt)
+		 ON CONFLICT (url) DO UPDATE SET scroll_pos = EXCLUDED.scroll_pos, visible_text = EXCLUDED.visible_text, updated_at = CURRENT_TIMESTAMP
+		 RETURNING id, updated_at`,
+		pagestate.Url, pagestate.ScrollPos, pagestate.VisibleText).Scan(&pagestate.Id, &pagestate.UpdatedAt)
 
 	return pagestate, err
 }
@@ -36,13 +36,13 @@ func (r Repository) SavePagestate(ctx context.Context, pagestate Pagestate) (Pag
 func (r Repository) GetPagestate(ctx context.Context, url string) (Pagestate, error) {
 	var pagestate Pagestate
 
-	err := r.conn.QueryRow(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates WHERE url = $1", url).Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+	err := r.conn.QueryRow(ctx, "SELECT id, url, scroll_pos, visible_text, updated_at FROM pagestates WHERE url = $1", url).Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.UpdatedAt)
 
 	return pagestate, err
 }
 
 func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
-	rows, err := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates ORDER BY created_at DESC")
+	rows, err := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, updated_at FROM pagestates ORDER BY updated_at DESC")
 
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
 	for rows.Next() {
 		var pagestate Pagestate
 
-		err := rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+		err := rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.UpdatedAt)
 
 		if err != nil {
 			return nil, err
