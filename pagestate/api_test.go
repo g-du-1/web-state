@@ -91,37 +91,45 @@ func (suite *PagestateAPITestSuite) TestGetsExistingPageStateForUrl() {
 	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
 	defer ts.Close()
 
-	requestBody := map[string]any{
-		"url":         "https://second-example.com",
-		"scrollPos":   363,
-		"visibleText": "text",
+	url := "https://example.com/unique"
+
+	requestBody1 := map[string]any{
+		"url":         url,
+		"scrollPos":   1,
+		"visibleText": "first",
 	}
 
-	jsonData, err := json.Marshal(requestBody)
+	jsonData1, _ := json.Marshal(requestBody1)
+	resp1, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(jsonData1))
 	assert.NoError(t, err)
+	defer resp1.Body.Close()
+	assert.Equal(t, http.StatusCreated, resp1.StatusCode)
 
-	resp, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(jsonData))
+	requestBody2 := map[string]any{
+		"url":         url,
+		"scrollPos":   2,
+		"visibleText": "second",
+	}
+
+	jsonData2, _ := json.Marshal(requestBody2)
+	resp2, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(jsonData2))
 	assert.NoError(t, err)
-	defer resp.Body.Close()
+	defer resp2.Body.Close()
+	assert.Equal(t, http.StatusCreated, resp2.StatusCode)
 
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
-
-	url := "https://second-example.com"
-
-	getResp, err := http.Get(ts.URL + "/api/v1/pagestate?url=" + url)
+	getResp, err := http.Get(ts.URL + "/api/v1/pagestate/all")
 	assert.NoError(t, err)
 	defer getResp.Body.Close()
-
 	assert.Equal(t, http.StatusOK, getResp.StatusCode)
 
-	var getResponse PagestateResponse
-	err = json.NewDecoder(getResp.Body).Decode(&getResponse)
+	var response GetAllPagestatesResponse
+	err = json.NewDecoder(getResp.Body).Decode(&response)
 	assert.NoError(t, err)
 
-	assert.NotZero(t, getResponse.Id)
-	assert.Equal(t, url, getResponse.Url)
-	assert.Equal(t, 363, getResponse.ScrollPos)
-	assert.Equal(t, "text", getResponse.VisibleText)
+	assert.Len(t, response.Pagestates, 1)
+	assert.Equal(t, url, response.Pagestates[0].Url)
+	assert.Equal(t, 2, response.Pagestates[0].ScrollPos)
+	assert.Equal(t, "second", response.Pagestates[0].VisibleText)
 }
 
 func (suite *PagestateAPITestSuite) TestGetsAllPageStatesInOrder() {

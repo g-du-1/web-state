@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS pagestates (
-    id serial,
-    url varchar(500),
+    id serial PRIMARY KEY,
+    url varchar(500) UNIQUE NOT NULL,
     scroll_pos integer,
     visible_text text,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
