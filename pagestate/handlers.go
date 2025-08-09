@@ -57,7 +57,12 @@ func (h *Handler) SavePageState(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetPageState(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Query().Get("url")
 
-	pagestate, _ := h.repo.GetPagestate(r.Context(), url)
+	pagestate, err := h.repo.GetPagestate(r.Context(), url)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 
 	response := PagestateResponse(pagestate)
 

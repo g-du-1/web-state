@@ -230,6 +230,18 @@ func (suite *PagestateAPITestSuite) TestDeletesAllPageStates() {
 	assert.Empty(t, response.Pagestates)
 }
 
+func (suite *PagestateAPITestSuite) TestReturns404WhenPageStateDoesNotExist() {
+	t := suite.T()
+
+	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
+	defer ts.Close()
+
+	getResp, err := http.Get(ts.URL + "/api/v1/pagestate?url=https://example.com/page1")
+	assert.NoError(t, err)
+	defer getResp.Body.Close()
+	assert.Equal(t, http.StatusNotFound, getResp.StatusCode)
+}
+
 func TestPagestateAPITestSuite(t *testing.T) {
 	suite.Run(t, new(PagestateAPITestSuite))
 }
