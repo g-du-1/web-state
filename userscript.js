@@ -111,18 +111,23 @@
     console.log("load");
     createButtons();
 
-    setInterval(() => {
-      if (location.href !== lastUrl) {
-        lastUrl = location.href;
-        console.log("url changed");
-        getLatestPageState();
+    let lastUrl = location.href;
+
+    new MutationObserver(() => {
+      const url = location.href;
+      if (url !== lastUrl) {
+        lastUrl = url;
+        onUrlChange();
       }
-    }, 500);
+    }).observe(document, { subtree: true, childList: true });
+
+    const onUrlChange = () => {
+      console.log("URL changed:", location.href);
+      getLatestPageState();
+    };
 
     getLatestPageState();
   });
-
-  let lastUrl = location.href;
 
   const getVisibleText = () => {
     const viewport = {
