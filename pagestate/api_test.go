@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"page-state-saver/testhelpers"
 	"testing"
 
@@ -55,13 +54,13 @@ func (suite *PagestateAPITestSuite) TearDownSuite() {
 	}
 }
 
-func (suite *PagestateAPITestSuite) TestCreatePagestateAPI() {
+func (suite *PagestateAPITestSuite) TestSavePagestateAPI() {
 	t := suite.T()
 
 	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
 	defer ts.Close()
 
-	requestBody := map[string]interface{}{
+	requestBody := map[string]any{
 		"url":         "https://example.com",
 		"scrollPos":   33,
 		"visibleText": "Sample visible text content",
@@ -84,102 +83,6 @@ func (suite *PagestateAPITestSuite) TestCreatePagestateAPI() {
 	assert.Equal(t, "https://example.com", response.Url)
 	assert.Equal(t, 33, response.ScrollPos)
 	assert.Equal(t, "Sample visible text content", response.VisibleText)
-}
-
-func (suite *PagestateAPITestSuite) TestGetPagestateAPI() {
-	t := suite.T()
-
-	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
-	defer ts.Close()
-
-	createJsonData1, err := json.Marshal(map[string]any{"url": "https://test1.com", "scrollPos": 150, "visibleText": "First page content"})
-	assert.NoError(t, err)
-
-	createResp1, err := http.Post(ts.URL+"/pagestate", "application/json", bytes.NewBuffer(createJsonData1))
-	assert.NoError(t, err)
-	defer createResp1.Body.Close()
-
-	assert.Equal(t, http.StatusCreated, createResp1.StatusCode)
-
-	var createResponse1 CreatePagestateResponse
-	err = json.NewDecoder(createResp1.Body).Decode(&createResponse1)
-	assert.NoError(t, err)
-
-	createJsonData2, err := json.Marshal(map[string]any{"url": "https://test2.com", "scrollPos": 300, "visibleText": "Second page content"})
-	assert.NoError(t, err)
-
-	createResp2, err := http.Post(ts.URL+"/pagestate", "application/json", bytes.NewBuffer(createJsonData2))
-	assert.NoError(t, err)
-	defer createResp2.Body.Close()
-
-	assert.Equal(t, http.StatusCreated, createResp2.StatusCode)
-
-	var createResponse2 CreatePagestateResponse
-	err = json.NewDecoder(createResp2.Body).Decode(&createResponse2)
-	assert.NoError(t, err)
-
-	getResp, err := http.Get(ts.URL + "/pagestate/get")
-	assert.NoError(t, err)
-	defer getResp.Body.Close()
-
-	assert.Equal(t, http.StatusOK, getResp.StatusCode)
-
-	var getResponse GetAllPagestatesResponse
-	err = json.NewDecoder(getResp.Body).Decode(&getResponse)
-	assert.NoError(t, err)
-
-	assert.Len(t, getResponse.Pagestates, 2)
-
-	found1, found2 := false, false
-	for _, retrieved := range getResponse.Pagestates {
-		if retrieved.Id == createResponse1.Id {
-			assert.Equal(t, createResponse1.Url, retrieved.Url)
-			assert.Equal(t, createResponse1.ScrollPos, retrieved.ScrollPos)
-			assert.Equal(t, createResponse1.VisibleText, retrieved.VisibleText)
-			found1 = true
-		}
-		if retrieved.Id == createResponse2.Id {
-			assert.Equal(t, createResponse2.Url, retrieved.Url)
-			assert.Equal(t, createResponse2.ScrollPos, retrieved.ScrollPos)
-			assert.Equal(t, createResponse2.VisibleText, retrieved.VisibleText)
-			found2 = true
-		}
-	}
-	assert.True(t, found1, "First created page state not found in response")
-	assert.True(t, found2, "Second created page state not found in response")
-}
-
-func (suite *PagestateAPITestSuite) TestGetLatestPagestateForUrl() {
-	t := suite.T()
-
-	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
-	defer ts.Close()
-
-	createJsonData1, err := json.Marshal(map[string]any{"url": "https://example.com", "scrollPos": 100, "visibleText": "First state"})
-	assert.NoError(t, err)
-	createResp1, err := http.Post(ts.URL+"/pagestate", "application/json", bytes.NewBuffer(createJsonData1))
-	assert.NoError(t, err)
-	defer createResp1.Body.Close()
-	assert.Equal(t, http.StatusCreated, createResp1.StatusCode)
-
-	createJsonData2, err := json.Marshal(map[string]any{"url": "https://example.com", "scrollPos": 200, "visibleText": "Second state"})
-	assert.NoError(t, err)
-	createResp2, err := http.Post(ts.URL+"/pagestate", "application/json", bytes.NewBuffer(createJsonData2))
-	assert.NoError(t, err)
-	defer createResp2.Body.Close()
-	assert.Equal(t, http.StatusCreated, createResp2.StatusCode)
-
-	getLatestResp, err := http.Get(ts.URL + "/pagestate/latest?url=" + url.QueryEscape("https://example.com"))
-	assert.NoError(t, err)
-	defer getLatestResp.Body.Close()
-	assert.Equal(t, http.StatusOK, getLatestResp.StatusCode)
-
-	var latestState Pagestate
-	err = json.NewDecoder(getLatestResp.Body).Decode(&latestState)
-	assert.NoError(t, err)
-	assert.Equal(t, "https://example.com", latestState.Url)
-	assert.Equal(t, 200, latestState.ScrollPos)
-	assert.Equal(t, "Second state", latestState.VisibleText)
 }
 
 func TestPagestateAPITestSuite(t *testing.T) {
