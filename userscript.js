@@ -13,7 +13,7 @@
   "use strict";
 
   const baseUrl = "http://192.168.0.11:8080/api/v1";
-  const saveUrl = `${baseUrl}/pagestate`;
+  const saveUrl = `${baseUrl}/pagestate/save`;
   const getLatestUrl = `${baseUrl}/pagestate?url=`;
 
   let latestState = null;
