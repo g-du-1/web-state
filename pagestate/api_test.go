@@ -250,6 +250,42 @@ func (suite *PagestateAPITestSuite) TestReturns404WhenPageStateDoesNotExist() {
 	assert.Equal(t, http.StatusNotFound, getResp.StatusCode)
 }
 
+func (suite *PagestateAPITestSuite) TestReturnsPageStateWhenExists() {
+	t := suite.T()
+
+	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
+	defer ts.Close()
+
+	url := "https://example.com/test-page"
+
+	requestBody := map[string]any{
+		"url":         url,
+		"scrollPos":   100,
+		"visibleText": "Test content",
+	}
+
+	jsonData, err := json.Marshal(requestBody)
+	assert.NoError(t, err)
+
+	saveResp, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(jsonData))
+	assert.NoError(t, err)
+	defer saveResp.Body.Close()
+	assert.Equal(t, http.StatusCreated, saveResp.StatusCode)
+
+	getResp, err := http.Get(ts.URL + "/api/v1/pagestate?url=" + url)
+	assert.NoError(t, err)
+	defer getResp.Body.Close()
+	assert.Equal(t, http.StatusOK, getResp.StatusCode)
+
+	var response PagestateResponse
+	err = json.NewDecoder(getResp.Body).Decode(&response)
+	assert.NoError(t, err)
+
+	assert.Equal(t, url, response.Url)
+	assert.Equal(t, 100, response.ScrollPos)
+	assert.Equal(t, "Test content", response.VisibleText)
+}
+
 func TestPagestateAPITestSuite(t *testing.T) {
 	suite.Run(t, new(PagestateAPITestSuite))
 }
