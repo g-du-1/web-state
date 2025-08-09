@@ -1,2 +1,0 @@
-ALTER TABLE pagestates
-ADD COLUMN IF NOT EXISTS created_at timestamp DEFAULT CURRENT_TIMESTAMP;
