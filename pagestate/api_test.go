@@ -122,14 +122,14 @@ func (suite *PagestateAPITestSuite) TestGetsExistingPageStateForUrl() {
 	defer getResp.Body.Close()
 	assert.Equal(t, http.StatusOK, getResp.StatusCode)
 
-	var response GetAllPagestatesResponse
+	var response []PagestateResponse
 	err = json.NewDecoder(getResp.Body).Decode(&response)
 	assert.NoError(t, err)
 
-	assert.Len(t, response.Pagestates, 1)
-	assert.Equal(t, url, response.Pagestates[0].Url)
-	assert.Equal(t, 2, response.Pagestates[0].ScrollPos)
-	assert.Equal(t, "second", response.Pagestates[0].VisibleText)
+	assert.Len(t, response, 1)
+	assert.Equal(t, url, response[0].Url)
+	assert.Equal(t, 2, response[0].ScrollPos)
+	assert.Equal(t, "second", response[0].VisibleText)
 }
 
 func (suite *PagestateAPITestSuite) TestGetsAllPageStatesInOrder() {
@@ -172,18 +172,18 @@ func (suite *PagestateAPITestSuite) TestGetsAllPageStatesInOrder() {
 	defer getResp.Body.Close()
 	assert.Equal(t, http.StatusOK, getResp.StatusCode)
 
-	var response GetAllPagestatesResponse
+	var response []PagestateResponse
 	err = json.NewDecoder(getResp.Body).Decode(&response)
 	assert.NoError(t, err)
-	assert.Len(t, response.Pagestates, 2)
+	assert.Len(t, response, 2)
 
-	assert.Equal(t, url2, response.Pagestates[0].Url)
-	assert.Equal(t, 4321, response.Pagestates[0].ScrollPos)
-	assert.Equal(t, "other text", response.Pagestates[0].VisibleText)
+	assert.Equal(t, url2, response[0].Url)
+	assert.Equal(t, 4321, response[0].ScrollPos)
+	assert.Equal(t, "other text", response[0].VisibleText)
 
-	assert.Equal(t, url1, response.Pagestates[1].Url)
-	assert.Equal(t, 9876, response.Pagestates[1].ScrollPos)
-	assert.Equal(t, "some text", response.Pagestates[1].VisibleText)
+	assert.Equal(t, url1, response[1].Url)
+	assert.Equal(t, 9876, response[1].ScrollPos)
+	assert.Equal(t, "some text", response[1].VisibleText)
 }
 
 func (suite *PagestateAPITestSuite) TestDeletesAllPageStates() {
@@ -232,10 +232,10 @@ func (suite *PagestateAPITestSuite) TestDeletesAllPageStates() {
 	defer getResp.Body.Close()
 	assert.Equal(t, http.StatusOK, getResp.StatusCode)
 
-	var response GetAllPagestatesResponse
+	var response []PagestateResponse
 	err = json.NewDecoder(getResp.Body).Decode(&response)
 	assert.NoError(t, err)
-	assert.Empty(t, response.Pagestates)
+	assert.Empty(t, response)
 }
 
 func (suite *PagestateAPITestSuite) TestReturns404WhenPageStateDoesNotExist() {
