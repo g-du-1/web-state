@@ -41,7 +41,7 @@ func (h *Handler) SavePageState(w http.ResponseWriter, r *http.Request) {
 		VisibleText: req.VisibleText,
 	}
 
-	createdPagestate, _ := h.repo.CreatePagestate(r.Context(), pagestate)
+	createdPagestate, _ := h.repo.SavePagestate(r.Context(), pagestate)
 
 	response := PagestateResponse(createdPagestate)
 

@@ -18,41 +18,12 @@ func NewRepository(ctx context.Context, connStr string) (*Repository, error) {
 	}, nil
 }
 
-func (r Repository) CreatePagestate(ctx context.Context, pagestate Pagestate) (Pagestate, error) {
+func (r Repository) SavePagestate(ctx context.Context, pagestate Pagestate) (Pagestate, error) {
+	// TODO: Update if exists
+
 	err := r.conn.QueryRow(ctx,
 		"INSERT INTO pagestates (url, scroll_pos, visible_text) VALUES ($1, $2, $3) RETURNING id, created_at",
 		pagestate.Url, pagestate.ScrollPos, pagestate.VisibleText).Scan(&pagestate.Id, &pagestate.CreatedAt)
 
 	return pagestate, err
-}
-
-func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
-	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates ORDER BY created_at DESC")
-
-	defer rows.Close()
-
-	var pagestates []Pagestate
-
-	for rows.Next() {
-		var pagestate Pagestate
-
-		rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
-
-		pagestates = append(pagestates, pagestate)
-	}
-
-	return pagestates, rows.Err()
-}
-
-func (r Repository) GetLatestPagestateForUrl(ctx context.Context, url string) (Pagestate, error) {
-	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates WHERE url = $1 ORDER BY created_at DESC LIMIT 1", url)
-
-	defer rows.Close()
-
-	var pagestate Pagestate
-
-	rows.Next()
-	rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
-
-	return pagestate, rows.Err()
 }
