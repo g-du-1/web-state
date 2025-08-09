@@ -124,6 +124,60 @@ func (suite *PagestateAPITestSuite) TestGetsExistingPageStateForUrl() {
 	assert.Equal(t, "text", getResponse.VisibleText)
 }
 
+func (suite *PagestateAPITestSuite) TestGetsAllPageStatesInOrder() {
+	t := suite.T()
+
+	ts := httptest.NewServer(http.HandlerFunc(suite.server.server.Handler.ServeHTTP))
+	defer ts.Close()
+
+	url1 := "https://example.com/some-page"
+	url2 := "https://example.com/some-other-page"
+
+	requestBody1 := map[string]any{
+		"url":         url1,
+		"scrollPos":   9876,
+		"visibleText": "some text",
+	}
+
+	requestBody2 := map[string]any{
+		"url":         url2,
+		"scrollPos":   4321,
+		"visibleText": "other text",
+	}
+
+	jsonData1, err := json.Marshal(requestBody1)
+	assert.NoError(t, err)
+	resp1, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(jsonData1))
+	assert.NoError(t, err)
+	defer resp1.Body.Close()
+	assert.Equal(t, http.StatusCreated, resp1.StatusCode)
+
+	jsonData2, err := json.Marshal(requestBody2)
+	assert.NoError(t, err)
+	resp2, err := http.Post(ts.URL+"/api/v1/pagestate/save", "application/json", bytes.NewBuffer(jsonData2))
+	assert.NoError(t, err)
+	defer resp2.Body.Close()
+	assert.Equal(t, http.StatusCreated, resp2.StatusCode)
+
+	getResp, err := http.Get(ts.URL + "/api/v1/pagestate/all")
+	assert.NoError(t, err)
+	defer getResp.Body.Close()
+	assert.Equal(t, http.StatusOK, getResp.StatusCode)
+
+	var response GetAllPagestatesResponse
+	err = json.NewDecoder(getResp.Body).Decode(&response)
+	assert.NoError(t, err)
+	assert.Len(t, response.Pagestates, 2)
+
+	assert.Equal(t, url2, response.Pagestates[0].Url)
+	assert.Equal(t, 4321, response.Pagestates[0].ScrollPos)
+	assert.Equal(t, "other text", response.Pagestates[0].VisibleText)
+
+	assert.Equal(t, url1, response.Pagestates[1].Url)
+	assert.Equal(t, 9876, response.Pagestates[1].ScrollPos)
+	assert.Equal(t, "some text", response.Pagestates[1].VisibleText)
+}
+
 func TestPagestateAPITestSuite(t *testing.T) {
 	suite.Run(t, new(PagestateAPITestSuite))
 }

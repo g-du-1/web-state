@@ -35,3 +35,21 @@ func (r Repository) GetPagestate(ctx context.Context, url string) (Pagestate, er
 
 	return pagestate, err
 }
+
+func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
+	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates ORDER BY created_at DESC")
+
+	defer rows.Close()
+
+	var pagestates []Pagestate
+
+	for rows.Next() {
+		var pagestate Pagestate
+
+		rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+
+		pagestates = append(pagestates, pagestate)
+	}
+
+	return pagestates, rows.Err()
+}

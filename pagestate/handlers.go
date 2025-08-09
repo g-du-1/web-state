@@ -20,6 +20,10 @@ type PagestateResponse struct {
 	CreatedAt   time.Time `json:"createdAt"`
 }
 
+type GetAllPagestatesResponse struct {
+	Pagestates []PagestateResponse `json:"pagestates"`
+}
+
 type Handler struct {
 	repo *Repository
 }
@@ -56,6 +60,22 @@ func (h *Handler) GetPageState(w http.ResponseWriter, r *http.Request) {
 	pagestate, _ := h.repo.GetPagestate(r.Context(), url)
 
 	response := PagestateResponse(pagestate)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *Handler) GetAllPageStates(w http.ResponseWriter, r *http.Request) {
+	pagestates, _ := h.repo.GetAllPagestates(r.Context())
+
+	response := GetAllPagestatesResponse{
+		Pagestates: make([]PagestateResponse, len(pagestates)),
+	}
+
+	for i, pagestate := range pagestates {
+		response.Pagestates[i] = PagestateResponse(pagestate)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
