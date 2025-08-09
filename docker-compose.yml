@@ -3,9 +3,9 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: page-state-saver-db
+    container_name: page_state_saver_db
     environment:
-      POSTGRES_DB: page-state-saver
+      POSTGRES_DB: page_state_saver
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -14,7 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./testdata/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d page-state-saver"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d page_state_saver"]
       interval: 10s
       timeout: 5s
       retries: 5

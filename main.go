@@ -14,7 +14,7 @@ func main() {
 	dbConnStr := os.Getenv("DATABASE_URL")
 
 	if dbConnStr == "" {
-		dbConnStr = "postgres://postgres:postgres@localhost:5432/page-state-saver?sslmode=disable"
+		dbConnStr = "postgres://postgres:postgres@localhost:5432/page_state_saver?sslmode=disable"
 	}
 
 	repo, err := pagestate.NewRepository(ctx, dbConnStr)

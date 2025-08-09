@@ -11,23 +11,42 @@ type Repository struct {
 }
 
 func NewRepository(ctx context.Context, connStr string) (*Repository, error) {
-	conn, _ := pgx.Connect(ctx, connStr)
+	conn, err := pgx.Connect(ctx, connStr)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &Repository{
 		conn: conn,
 	}, nil
 }
 
-func (r Repository) CreatePagestate(ctx context.Context, pagestate Pagestate) (Pagestate, error) {
+func (r Repository) SavePagestate(ctx context.Context, pagestate Pagestate) (Pagestate, error) {
 	err := r.conn.QueryRow(ctx,
-		"INSERT INTO pagestates (url, scroll_pos, visible_text) VALUES ($1, $2, $3) RETURNING id, created_at",
+		`INSERT INTO pagestates (url, scroll_pos, visible_text)
+		 VALUES ($1, $2, $3)
+		 ON CONFLICT (url) DO UPDATE SET scroll_pos = EXCLUDED.scroll_pos, visible_text = EXCLUDED.visible_text
+		 RETURNING id, created_at`,
 		pagestate.Url, pagestate.ScrollPos, pagestate.VisibleText).Scan(&pagestate.Id, &pagestate.CreatedAt)
 
 	return pagestate, err
 }
 
+func (r Repository) GetPagestate(ctx context.Context, url string) (Pagestate, error) {
+	var pagestate Pagestate
+
+	err := r.conn.QueryRow(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates WHERE url = $1", url).Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+
+	return pagestate, err
+}
+
 func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
-	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates ORDER BY created_at DESC")
+	rows, err := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates ORDER BY created_at DESC")
+
+	if err != nil {
+		return nil, err
+	}
 
 	defer rows.Close()
 
@@ -36,7 +55,11 @@ func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
 	for rows.Next() {
 		var pagestate Pagestate
 
-		rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+		err := rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
+
+		if err != nil {
+			return nil, err
+		}
 
 		pagestates = append(pagestates, pagestate)
 	}
@@ -44,15 +67,8 @@ func (r Repository) GetAllPagestates(ctx context.Context) ([]Pagestate, error) {
 	return pagestates, rows.Err()
 }
 
-func (r Repository) GetLatestPagestateForUrl(ctx context.Context, url string) (Pagestate, error) {
-	rows, _ := r.conn.Query(ctx, "SELECT id, url, scroll_pos, visible_text, created_at FROM pagestates WHERE url = $1 ORDER BY created_at DESC LIMIT 1", url)
+func (r Repository) DeleteAllPageStates(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, "DELETE FROM pagestates")
 
-	defer rows.Close()
-
-	var pagestate Pagestate
-
-	rows.Next()
-	rows.Scan(&pagestate.Id, &pagestate.Url, &pagestate.ScrollPos, &pagestate.VisibleText, &pagestate.CreatedAt)
-
-	return pagestate, rows.Err()
+	return err
 }
