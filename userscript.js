@@ -12,57 +12,110 @@
 (function () {
   "use strict";
 
-  const baseUrl = "http://192.168.0.11:8080";
+  const baseUrl = "http://192.168.0.11:8080/api/v1";
   const saveUrl = `${baseUrl}/pagestate`;
-  const getLatestUrl = `${baseUrl}/pagestate/latest`;
+  const getLatestUrl = `${baseUrl}/pagestate?url=`;
 
   let latestState = null;
-  let stateButton = null;
 
-  const createButton = () => {
-    const button = document.createElement("button");
-
-    button.style.cssText = `
+  const createButtons = () => {
+    const container = document.createElement("div");
+    container.id = "scroll-state-saver-container";
+    container.style.cssText = `
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 0;
+      right: 0;
       z-index: 10000;
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 11px;
-      min-width: 100px;
     `;
 
-    button.onclick = () => {
-      if (latestState) {
-        alert(latestState.visibleText);
-      } else {
-        alert("No saved state found");
+    const button1 = document.createElement("button");
+
+    button1.id = "scroll-state-saver-btn";
+
+    button1.style.cssText = `
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      cursor: pointer;
+      border-radius: 0;
+      font-size: 11px;
+      min-width: 50px;
+    `;
+
+    button1.textContent = "0";
+
+    container.onclick = () => {
+      if (latestState.url) {
+        alert(
+          latestState.url +
+            "\n\n" +
+            latestState.scrollPos +
+            "\n\n" +
+            latestState.visibleText
+        );
       }
     };
 
-    document.body.appendChild(button);
-    stateButton = button;
-    updateButtonText();
+    container.appendChild(button1);
+
+    const button2 = document.createElement("button");
+
+    button2.id = "scroll-state-saver-scrollpos-btn";
+
+    button2.style.cssText = `
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 11px;
+      min-width: 50px;
+    `;
+
+    button2.textContent = latestState?.scrollPos ? latestState.scrollPos : "0";
+
+    container.appendChild(button2);
+
+    window.addEventListener("pagestateloaded", () => {
+      button2.textContent = latestState?.scrollPos
+        ? latestState.scrollPos
+        : "0";
+    });
+
+    document.body.appendChild(container);
   };
 
-  const updateButtonText = () => {
-    if (!stateButton) return;
+  const getLatestPageState = () => {
+    GM_xmlhttpRequest({
+      method: "GET",
+      url: getLatestUrl + encodeURIComponent(window.location.href),
+      onload: (response) => {
+        latestState = JSON.parse(response.responseText);
 
-    const currentScroll = Math.trunc(window.scrollY);
+        window.dispatchEvent(
+          new CustomEvent("pagestateloaded", {
+            detail: {
+              name: "latestState",
+              value: latestState,
+            },
+          })
+        );
+      },
+      onerror: (error) => {},
+    });
+  };
 
-    const maxScroll = Math.trunc(
-      document.documentElement.scrollHeight - window.innerHeight
-    );
+  window.addEventListener("load", () => {
+    createButtons();
+    getLatestPageState();
+  });
 
-    if (latestState) {
-      stateButton.textContent = `${currentScroll} / ${latestState.scrollPos}`;
-    } else {
-      stateButton.textContent = `${currentScroll} / ${maxScroll}`;
+  let lastUrl = location.href;
+
+  setInterval(() => {
+    if (location.href !== lastUrl) {
+      lastUrl = location.href;
+      getLatestPageState();
     }
-  };
+  }, 500);
 
   const getVisibleText = () => {
     const viewport = {
@@ -105,6 +158,16 @@
     return visibleText.join(" ");
   };
 
+  const updateButtonText = () => {
+    const stateButton = document.getElementById("scroll-state-saver-btn");
+
+    if (stateButton) {
+      stateButton.textContent = `${Math.trunc(window.scrollY)}`;
+    }
+  };
+
+  window.addEventListener("scroll", updateButtonText);
+
   const savePageState = () => {
     const payload = {
       url: window.location.href,
@@ -119,35 +182,15 @@
       headers: {
         "Content-Type": "application/json",
       },
-      onload: (response) => {
-        console.log("Saved Page State:", JSON.parse(response.responseText));
-      },
-      onerror: (error) => {
-        console.error("Page State Save:", error);
-      },
+      onload: (response) => {},
+      onerror: (error) => {},
     });
   };
 
-  const getLatestPageState = () => {
-    GM_xmlhttpRequest({
-      method: "GET",
-      url: getLatestUrl + "?url=" + encodeURIComponent(window.location.href),
-      onload: (response) => {
-        latestState = JSON.parse(response.responseText);
-        console.log("Latest Page State:", latestState);
-        updateButtonText();
-      },
-      onerror: (error) => {
-        console.error("Latest Page State:", error);
-      },
-    });
-  };
+  let saveTimeout;
 
-  window.addEventListener("load", () => {
-    createButton();
-    getLatestPageState();
+  window.addEventListener("scrollend", () => {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(savePageState, 2500);
   });
-
-  window.addEventListener("scroll", updateButtonText);
-  window.addEventListener("scrollend", savePageState);
 })();
