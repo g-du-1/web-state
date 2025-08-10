@@ -20,9 +20,9 @@ go tool cover --html=coverage
 
 Use the VSCode launch config.
 
-## Userscript
+## Front End
 
-Use Tampermonkey.
+Use it with the browser extension.
 
 ## DB
 
