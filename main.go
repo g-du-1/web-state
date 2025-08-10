@@ -23,6 +23,8 @@ func main() {
 		log.Fatal("Failed to create repository:", err)
 	}
 
+	defer repo.Close()
+
 	server := pagestate.NewServer("8080", repo)
 
 	log.Println("Starting page state server on port 8080")

@@ -41,7 +41,7 @@ func (suite *PagestateAPITestSuite) SetupSuite() {
 }
 
 func (suite *PagestateAPITestSuite) SetupTest() {
-	_, err := suite.repository.conn.Exec(suite.ctx, "TRUNCATE TABLE pagestates RESTART IDENTITY CASCADE")
+	_, err := suite.repository.pool.Exec(suite.ctx, "TRUNCATE TABLE pagestates RESTART IDENTITY CASCADE")
 
 	if err != nil {
 		suite.T().Logf("error clearing database: %s", err)
@@ -49,6 +49,8 @@ func (suite *PagestateAPITestSuite) SetupTest() {
 }
 
 func (suite *PagestateAPITestSuite) TearDownSuite() {
+	suite.repository.Close()
+
 	if err := suite.pgContainer.Terminate(suite.ctx); err != nil {
 		suite.T().Logf("error terminating postgres container: %s", err)
 	}
