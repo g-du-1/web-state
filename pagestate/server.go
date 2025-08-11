@@ -15,6 +15,7 @@ func NewServer(port string, repo *Repository) *Server {
 	handler := NewHandler(repo)
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("/api/v1/health", handler.Health)
 	mux.HandleFunc("/api/v1/pagestate/save", handler.SavePageState)
 	mux.HandleFunc("/api/v1/pagestate", handler.GetPageState)
 	mux.HandleFunc("/api/v1/pagestate/all", handler.GetAllPageStates)
