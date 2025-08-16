@@ -1,6 +1,8 @@
 # page-state-saver
 
-## Running
+## Usage
+
+## Dev
 
 ```bash
 docker-compose up -d
@@ -9,20 +11,12 @@ docker-compose up -d
 ## Testing
 
 ```go
-go test -v ./...
+go test -v./...
 
-go test -coverprofile=coverage.out ./...
+go test -coverprofile= coverage.out./...
 
-go tool cover --html=coverage
+go tool cover --html = coverage
 ```
-
-## Debugging
-
-Use the VSCode launch config.
-
-## Front End
-
-Use it with the browser extension.
 
 ## DB
 
@@ -35,3 +29,22 @@ psql -h localhost -p 5432 -U postgres -d page_state_saver
 
 TRUNCATE pagestates;
 ```
+
+## Stack
+
+- Go
+- PostgreSQL
+- testcontainers
+- Chrome Extension (JSDoc types)
+- Termux Android, Edge
+
+## Extension Dev
+
+Use the AHK window switcher.
+
+`cd browser-extension`
+`npm run watch`
+
+Set the reload keybind from manifest.json in extension settings.
+
+Mouse 1 + W switches to Chrome and reloads the extension.

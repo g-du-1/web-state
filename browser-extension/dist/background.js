@@ -1,0 +1,109 @@
+// src/util/isUrlDisallowed.ts
+var isUrlDisallowed = async (url) => {
+  const { whitelistSites } = await chrome.storage.local.get("whitelistSites");
+  if (whitelistSites === "") return true;
+  let result = true;
+  const whitelistedArr = whitelistSites?.split(",");
+  whitelistedArr.forEach((site) => {
+    if (url.includes(site)) {
+      result = false;
+    }
+  });
+  return result;
+};
+
+// src/background.ts
+chrome.commands.onCommand.addListener((command) => {
+  if (command.includes("reload-extensions")) {
+    chrome.runtime.reload();
+  }
+});
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tab.url) {
+    const isDisallowed = await isUrlDisallowed(tab.url);
+    if (isDisallowed) {
+      return;
+    }
+    console.log("Tab updated", tab.url);
+    const { pageStateApiUrl } = await chrome.storage.local.get(
+      "pageStateApiUrl"
+    );
+    try {
+      const getLatestUrl = `${pageStateApiUrl}/pagestate?url=${encodeURIComponent(
+        tab.url
+      )}`;
+      const response = await fetch(getLatestUrl);
+      const data = await response.json();
+      console.log("Page state fetched", data);
+      await chrome.tabs.sendMessage(tabId, {
+        type: "PAGE_STATE_LOADED",
+        data
+      });
+    } catch (error) {
+      console.log("Failed to fetch page state:", error);
+      await chrome.tabs.sendMessage(tabId, {
+        type: "PAGE_STATE_LOADED",
+        data: null
+      });
+    }
+  }
+});
+chrome.runtime.onMessage.addListener(async (message, sender) => {
+  const isDisallowed = await isUrlDisallowed(sender.url || "");
+  if (isDisallowed) {
+    return;
+  }
+  if (message.type === "scrollStopped") {
+    console.log("scrollStopped message received", message.data);
+    const { pageStateApiUrl } = await chrome.storage.local.get(
+      "pageStateApiUrl"
+    );
+    try {
+      const response = await fetch(`${pageStateApiUrl}/pagestate/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(message.data)
+      });
+      const data = await response.json();
+      console.log("Page state saved", data);
+    } catch (error) {
+      console.log("Failed to save page state:", error);
+    }
+  }
+  if (message.type === "triggerHealthCheck") {
+    const targetTabId = sender.tab?.id;
+    if (!targetTabId) return;
+    const [activeTab] = await chrome.tabs.query({
+      active: true,
+      lastFocusedWindow: true
+    });
+    if (!activeTab || activeTab.id !== targetTabId) return;
+    const { pageStateApiUrl } = await chrome.storage.local.get(
+      "pageStateApiUrl"
+    );
+    try {
+      const response = await fetch(`${pageStateApiUrl}/health`);
+      if (response.ok) {
+        console.log("Health check successful");
+        await chrome.tabs.sendMessage(targetTabId, {
+          type: "HEALTH_CHECK_SUCCESSFUL",
+          data: null
+        });
+      } else {
+        console.log("Health check failed");
+        await chrome.tabs.sendMessage(targetTabId, {
+          type: "HEALTH_CHECK_UNSUCCESSFUL",
+          data: null
+        });
+      }
+    } catch (err) {
+      console.log("Health check error:", err);
+      await chrome.tabs.sendMessage(targetTabId, {
+        type: "HEALTH_CHECK_UNSUCCESSFUL",
+        data: null
+      });
+    }
+  }
+});

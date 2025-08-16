@@ -1,0 +1,32 @@
+{
+  "name": "Page State Saver",
+  "description": "Saves scroll state and visible text to a DB and reloads on page load.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "tabs", "alarms"],
+  "host_permissions": ["http://*/"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "type": "module"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "commands": {
+    "auto-reload-extensions": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+5"
+      },
+      "description": "Auto Reload Extensions",
+      "global": true
+    }
+  }
+}

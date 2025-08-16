@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./popup.css" />
+    <title>Page State Saver</title>
+  </head>
+  <body>
+    <h1 class="page-title">Page State Saver</h1>
+
+    <div class="api-config">
+      <label class="api-config__label" for="api-url">API URL</label>
+      <input
+        class="api-config__input"
+        type="text"
+        id="api-url"
+        name="api-url"
+        placeholder="Enter API URL"
+      />
+    </div>
+
+    <div class="whitelist-config">
+      <label class="whitelist-config__label" for="whitelist-sites"
+        >Whitelist Sites (separate by commas)</label
+      >
+      <input
+        class="whitelist-config__input"
+        type="text"
+        id="whitelist-sites"
+        name="whitelist-sites"
+        placeholder="reddit,bbc,google"
+      />
+    </div>
+
+    <script src="./popup.js" type="module"></script>
+  </body>
+</html>
