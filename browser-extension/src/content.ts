@@ -48,7 +48,7 @@ import { isUrlDisallowed } from "./util/isUrlDisallowed";
             "\n\n" +
             pageState.scrollPos +
             "\n\n" +
-            pageState.visibleText
+            pageState.visibleText,
         );
       }
     };
@@ -122,9 +122,7 @@ import { isUrlDisallowed } from "./util/isUrlDisallowed";
     }
   });
 
-  window.addEventListener("load", () => {
-    createButtons();
-  });
+  createButtons();
 
   window.addEventListener("scroll", () => {
     const btn = document.getElementById("scroll-state-saver-btn");

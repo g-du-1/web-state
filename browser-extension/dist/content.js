@@ -131,9 +131,7 @@ var isUrlDisallowed = async (url) => {
       }
     }
   });
-  window.addEventListener("load", () => {
-    createButtons();
-  });
+  createButtons();
   window.addEventListener("scroll", () => {
     const btn = document.getElementById("scroll-state-saver-btn");
     if (btn) {
