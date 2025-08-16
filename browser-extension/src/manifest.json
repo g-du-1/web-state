@@ -18,5 +18,14 @@
   "background": {
     "service_worker": "background.js",
     "type": "module"
+  },
+  "commands": {
+    "auto-reload-extensions": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+5"
+      },
+      "description": "Auto Reload Extensions",
+      "global": true
+    }
   }
 }

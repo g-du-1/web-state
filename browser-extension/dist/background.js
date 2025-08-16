@@ -13,6 +13,11 @@ var isUrlDisallowed = async (url) => {
 };
 
 // src/background.ts
+chrome.commands.onCommand.addListener((command) => {
+  if (command.includes("reload-extensions")) {
+    chrome.runtime.reload();
+  }
+});
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
     const isDisallowed = await isUrlDisallowed(tab.url);

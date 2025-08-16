@@ -37,3 +37,12 @@ TRUNCATE pagestates;
 - testcontainers
 - Chrome Extension (JSDoc types)
 - Termux Android, Edge
+
+## Extension Dev
+
+Use the AHK window switcher.
+
+`cd browser-extension`
+`npm run watch`
+
+Mouse 1 + W switches to Chrome and reloads the extension.
