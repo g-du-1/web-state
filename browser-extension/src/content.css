@@ -1,16 +1,32 @@
 #scroll-state-saver-container {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  z-index: 10000;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 10000;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    height: 35px;
 }
 
 #scroll-state-saver-btn,
 #scroll-state-saver-scrollpos-btn {
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  cursor: pointer;
-  border-radius: 0;
-  font-size: 11px;
-  min-width: 50px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    cursor: pointer;
+    border-radius: 0;
+    font-size: 10px;
+    min-width: 50px;
+    margin: 0;
+    padding: 4px 8px;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    line-height: 1.2;
+    text-decoration: none;
+    display: inline-block;
+    height: 100%;
 }
