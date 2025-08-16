@@ -11,7 +11,8 @@ body {
     font-weight: 600;
 }
 
-.api-config {
+.api-config,
+.whitelist-config {
     padding: 1.25rem;
     margin: 1rem;
     border: 1px solid #e0e0e0;
@@ -20,7 +21,8 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.api-config__label {
+.api-config__label,
+.whitelist-config__label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
@@ -28,7 +30,8 @@ body {
     font-size: 0.95rem;
 }
 
-.api-config__input {
+.api-config__input,
+.whitelist-config__input {
     width: 100%;
     padding: 0.75rem;
     border: 2px solid #e0e0e0;
@@ -38,7 +41,8 @@ body {
     transition: border-color 0.2s ease;
 }
 
-.api-config__input:focus {
+.api-config__input:focus,
+.whitelist-config__input:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
