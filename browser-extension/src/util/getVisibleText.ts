@@ -1,4 +1,4 @@
-const getVisibleText = () => {
+export const getVisibleText = () => {
   const viewport = {
     top: window.scrollY,
     left: window.scrollX,
@@ -40,5 +40,3 @@ const getVisibleText = () => {
 
   return visibleText.join(" ");
 };
-
-export default getVisibleText;

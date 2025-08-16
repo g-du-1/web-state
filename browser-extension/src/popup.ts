@@ -2,7 +2,7 @@ const apiInput = document.getElementById("api-url");
 
 if (apiInput) {
   apiInput.addEventListener("input", (event) => {
-    const target = /** @type {HTMLInputElement} */ (event.target);
+    const target = event.target as HTMLInputElement;
 
     chrome.storage.local.set({ redditPageStateUrl: target.value });
   });
@@ -13,8 +13,7 @@ chrome.storage.local.get("redditPageStateUrl", (result) => {
     const apiInput = document.getElementById("api-url");
 
     if (apiInput) {
-      /** @type {HTMLInputElement} */ (apiInput).value =
-        result.redditPageStateUrl;
+      (apiInput as HTMLInputElement).value = result.redditPageStateUrl;
     }
   }
 });
