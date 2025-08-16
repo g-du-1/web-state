@@ -45,4 +45,6 @@ Use the AHK window switcher.
 `cd browser-extension`
 `npm run watch`
 
+Set the reload keybind from manifest.json in extension settings.
+
 Mouse 1 + W switches to Chrome and reloads the extension.
