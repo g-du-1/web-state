@@ -4,12 +4,14 @@
   "type": "module",
   "scripts": {
     "build": "node build.js",
-    "watch": "node build.js --watch"
+    "watch": "node build.js --watch",
+    "test": "vitest"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.215",
     "chrome-types": "^0.1.370",
-    "esbuild": "^0.22.0",
-    "fs-extra": "^11.1.1"
+    "esbuild": "^0.25.9",
+    "fs-extra": "^11.1.1",
+    "vitest": "^3.2.4"
   }
 }

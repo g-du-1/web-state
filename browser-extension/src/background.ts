@@ -1,5 +1,13 @@
+import { isUrlDisallowed } from "./util/isUrlDisallowed";
+
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
+    const isDisallowed = await isUrlDisallowed(tab.url);
+
+    if (isDisallowed) {
+      return;
+    }
+
     console.log("Tab updated", tab.url);
 
     const { pageStateApiUrl } = await chrome.storage.local.get(
@@ -31,6 +39,12 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 });
 
 chrome.runtime.onMessage.addListener(async (message, sender) => {
+  const isDisallowed = await isUrlDisallowed(sender.url || "");
+
+  if (isDisallowed) {
+    return;
+  }
+
   if (message.type === "scrollStopped") {
     console.log("scrollStopped message received", message.data);
 

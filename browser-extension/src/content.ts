@@ -1,7 +1,14 @@
 import { PageState } from "./types";
 import { getVisibleText } from "./util/getVisibleText";
+import { isUrlDisallowed } from "./util/isUrlDisallowed";
 
-(() => {
+(async () => {
+  const isDisallowed = await isUrlDisallowed(window.location.href);
+
+  if (isDisallowed) {
+    return;
+  }
+
   console.log("GD Page State Saver Loading...");
 
   let pageState: PageState | null = null;

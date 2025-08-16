@@ -29,8 +29,26 @@ var getVisibleText = () => {
   return visibleText.join(" ");
 };
 
+// src/util/isUrlDisallowed.ts
+var isUrlDisallowed = async (url) => {
+  const { whitelistSites } = await chrome.storage.local.get("whitelistSites");
+  if (whitelistSites === "") return true;
+  let result = true;
+  const whitelistedArr = whitelistSites?.split(",");
+  whitelistedArr.forEach((site) => {
+    if (url.includes(site)) {
+      result = false;
+    }
+  });
+  return result;
+};
+
 // src/content.ts
-(() => {
+(async () => {
+  const isDisallowed = await isUrlDisallowed(window.location.href);
+  if (isDisallowed) {
+    return;
+  }
   console.log("GD Page State Saver Loading...");
   let pageState = null;
   let pageStateLoaded = false;

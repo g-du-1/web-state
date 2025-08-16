@@ -1,6 +1,24 @@
+// src/util/isUrlDisallowed.ts
+var isUrlDisallowed = async (url) => {
+  const { whitelistSites } = await chrome.storage.local.get("whitelistSites");
+  if (whitelistSites === "") return true;
+  let result = true;
+  const whitelistedArr = whitelistSites?.split(",");
+  whitelistedArr.forEach((site) => {
+    if (url.includes(site)) {
+      result = false;
+    }
+  });
+  return result;
+};
+
 // src/background.ts
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
+    const isDisallowed = await isUrlDisallowed(tab.url);
+    if (isDisallowed) {
+      return;
+    }
     console.log("Tab updated", tab.url);
     const { pageStateApiUrl } = await chrome.storage.local.get(
       "pageStateApiUrl"
@@ -26,6 +44,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   }
 });
 chrome.runtime.onMessage.addListener(async (message, sender) => {
+  const isDisallowed = await isUrlDisallowed(sender.url || "");
+  if (isDisallowed) {
+    return;
+  }
   if (message.type === "scrollStopped") {
     console.log("scrollStopped message received", message.data);
     const { pageStateApiUrl } = await chrome.storage.local.get(
