@@ -60,9 +60,7 @@ var isUrlDisallowed = async (url) => {
     button1.textContent = "0";
     container.onclick = () => {
       if (pageState && pageState.url) {
-        alert(
-          pageState.url + "\n\n" + pageState.scrollPos + "\n\n" + pageState.visibleText
-        );
+        alert(pageState.visibleText);
       }
     };
     container.appendChild(button1);

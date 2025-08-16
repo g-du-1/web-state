@@ -24,13 +24,7 @@ import { isUrlDisallowed } from "./util/isUrlDisallowed";
 
     container.onclick = () => {
       if (pageState && pageState.url) {
-        alert(
-          pageState.url +
-            "\n\n" +
-            pageState.scrollPos +
-            "\n\n" +
-            pageState.visibleText
-        );
+        alert(pageState.visibleText);
       }
     };
 
