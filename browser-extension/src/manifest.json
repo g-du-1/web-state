@@ -10,7 +10,7 @@
   "host_permissions": ["http://*/"],
   "content_scripts": [
     {
-      "matches": ["https://www.reddit.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["content.js"],
       "type": "module"
     }

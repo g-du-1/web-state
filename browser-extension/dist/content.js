@@ -31,7 +31,7 @@ var getVisibleText = () => {
 
 // src/content.ts
 (() => {
-  console.log("GD Reddit Loading...");
+  console.log("GD Page State Saver Loading...");
   let pageState = null;
   let pageStateLoaded = false;
   const createButtons = () => {

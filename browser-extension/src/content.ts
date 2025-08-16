@@ -2,7 +2,7 @@ import { PageState } from "./types";
 import { getVisibleText } from "./util/getVisibleText";
 
 (() => {
-  console.log("GD Reddit Loading...");
+  console.log("GD Page State Saver Loading...");
 
   let pageState: PageState | null = null;
   let pageStateLoaded = false;

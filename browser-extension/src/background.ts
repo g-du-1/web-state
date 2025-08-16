@@ -1,13 +1,13 @@
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete" && tab.url?.includes("reddit.com")) {
+  if (changeInfo.status === "complete" && tab.url) {
     console.log("Tab updated", tab.url);
 
-    const { redditPageStateUrl } = await chrome.storage.local.get(
-      "redditPageStateUrl"
+    const { pageStateApiUrl } = await chrome.storage.local.get(
+      "pageStateApiUrl"
     );
 
     try {
-      const getLatestUrl = `${redditPageStateUrl}/pagestate?url=${encodeURIComponent(
+      const getLatestUrl = `${pageStateApiUrl}/pagestate?url=${encodeURIComponent(
         tab.url
       )}`;
       const response = await fetch(getLatestUrl);
@@ -34,12 +34,12 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
   if (message.type === "scrollStopped") {
     console.log("scrollStopped message received", message.data);
 
-    const { redditPageStateUrl } = await chrome.storage.local.get(
-      "redditPageStateUrl"
+    const { pageStateApiUrl } = await chrome.storage.local.get(
+      "pageStateApiUrl"
     );
 
     try {
-      const response = await fetch(`${redditPageStateUrl}/pagestate/save`, {
+      const response = await fetch(`${pageStateApiUrl}/pagestate/save`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,12 +67,12 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
 
     if (!activeTab || activeTab.id !== targetTabId) return;
 
-    const { redditPageStateUrl } = await chrome.storage.local.get(
-      "redditPageStateUrl"
+    const { pageStateApiUrl } = await chrome.storage.local.get(
+      "pageStateApiUrl"
     );
 
     try {
-      const response = await fetch(`${redditPageStateUrl}/health`);
+      const response = await fetch(`${pageStateApiUrl}/health`);
 
       if (response.ok) {
         console.log("Health check successful");
