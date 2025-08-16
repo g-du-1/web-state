@@ -16,6 +16,10 @@ const copyStaticFiles = () => {
 
   fs.copySync(path.join(srcDir, "popup.html"), path.join(outDir, "popup.html"));
   fs.copySync(path.join(srcDir, "popup.css"), path.join(outDir, "popup.css"));
+  fs.copySync(
+    path.join(srcDir, "content.css"),
+    path.join(outDir, "content.css")
+  );
 };
 
 copyStaticFiles();

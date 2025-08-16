@@ -16,29 +16,10 @@ import { isUrlDisallowed } from "./util/isUrlDisallowed";
 
   const createButtons = () => {
     const container = document.createElement("div");
-
     container.id = "scroll-state-saver-container";
 
-    container.style.cssText = `
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      z-index: 10000;
-    `;
-
     const button1 = document.createElement("button");
-
     button1.id = "scroll-state-saver-btn";
-
-    button1.style.cssText = `
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      cursor: pointer;
-      border-radius: 0;
-      font-size: 11px;
-      min-width: 50px;
-    `;
-
     button1.textContent = "0";
 
     container.onclick = () => {
@@ -48,7 +29,7 @@ import { isUrlDisallowed } from "./util/isUrlDisallowed";
             "\n\n" +
             pageState.scrollPos +
             "\n\n" +
-            pageState.visibleText,
+            pageState.visibleText
         );
       }
     };
@@ -56,17 +37,7 @@ import { isUrlDisallowed } from "./util/isUrlDisallowed";
     container.appendChild(button1);
 
     const button2 = document.createElement("button");
-
     button2.id = "scroll-state-saver-scrollpos-btn";
-
-    button2.style.cssText = `
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border-radius: 0;
-      cursor: pointer;
-      font-size: 11px;
-      min-width: 50px;
-    `;
 
     container.appendChild(button2);
     document.body.appendChild(container);

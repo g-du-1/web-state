@@ -1,0 +1,16 @@
+#scroll-state-saver-container {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 10000;
+}
+
+#scroll-state-saver-btn,
+#scroll-state-saver-scrollpos-btn {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  cursor: pointer;
+  border-radius: 0;
+  font-size: 11px;
+  min-width: 50px;
+}
