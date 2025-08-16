@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: page_state_saver_db
-    environment:
+    environment: # TODO: Move to env
       POSTGRES_DB: page_state_saver
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -22,7 +22,7 @@ services:
   app:
     build: .
     container_name: page_state_saver_app
-    environment:
+    environment: # TODO: Move to env
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/page_state_saver?sslmode=disable
     ports:
       - "8080:8080"
