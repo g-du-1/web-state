@@ -1,5 +1,5 @@
 {
-  "name": "Page State Saver",
+  "name": "WebState",
   "description": "Saves scroll state and visible text to a DB and reloads on page load.",
   "version": "1.0",
   "manifest_version": 3,

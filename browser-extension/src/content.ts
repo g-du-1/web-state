@@ -9,7 +9,7 @@ import { isUrlDisallowed } from "./util/isUrlDisallowed";
     return;
   }
 
-  console.log("GD Page State Saver Loading...");
+  console.log("WebState Loading...");
 
   let pageState: PageState | null = null;
   let pageStateLoaded = false;
