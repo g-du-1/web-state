@@ -1,5 +1,9 @@
 # web-state
 
+## TODO
+- list down how to run extension
+- make public
+
 ## Usage
 
 ## Dev
