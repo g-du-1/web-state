@@ -5,8 +5,12 @@
 - Go
 - PostgreSQL
 - testcontainers
+- Docker
+- Termux Android, Edge Mobile
 - Chrome Extension
-- Termux Android, Edge
+  - TypeScript
+  - esbuild
+  - Vitest
 
 ## Development
 
