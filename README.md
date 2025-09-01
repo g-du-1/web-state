@@ -1,5 +1,11 @@
 # web-state
 
+## Overview
+A browser extension and backend service that preserves scroll position and visible content across page reloads in Single Page Applications (SPAs). Built to enhance research workflows by maintaining state even when browsers unexpectedly refresh tabs.
+
+## Features
+The solution consists of a Go API with PostgreSQL persistence running on Termux, paired with an event-driven browser extension compatible with both desktop and mobile browsers. A minimalist UI indicator shows current and saved scroll positions, with visual API health status (border). The system automatically saves scroll position and visible text content, restoring state seamlessly after page reloads.
+
 ## Stack
 
 - Go

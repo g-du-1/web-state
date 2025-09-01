@@ -49,7 +49,7 @@ var isUrlDisallowed = async (url) => {
   if (isDisallowed) {
     return;
   }
-  console.log("GD Page State Saver Loading...");
+  console.log("WebState Loading...");
   let pageState = null;
   let pageStateLoaded = false;
   const createButtons = () => {
