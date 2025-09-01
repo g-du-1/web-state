@@ -1,4 +1,4 @@
-# page-state-saver
+# web-state
 
 ## Usage
 
